@@ -5,7 +5,7 @@ import pyotp
 API_KEY     = "oFe09u88"
 CLIENT_CODE = "AAAJ463076"
 PASSWORD    = "7860"
-TOTP_SECRET = "RK2C2YUWSV74XKQETTEELQ2S6Y"  # From Angel One SmartAPI
+TOTP_SECRET = "RK2C2YUWSV74XKQETTEELQ2S6Y"
 # ======================
 
 # Generate TOTP using secret key
