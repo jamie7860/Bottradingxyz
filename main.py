@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from smartapi.smartConnect import SmartConnect
+SmartApi.smartConnect
 import pyotp
 import time
 from ta.trend import EMAIndicator, MACD
