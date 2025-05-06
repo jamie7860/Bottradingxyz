@@ -1,5 +1,6 @@
+
 smartapi-python
 pandas
 numpy
-ta-lib
 pyotp
+ta
