@@ -3,3 +3,4 @@ pyotp
 ta
 pandas
 numpy
+smartapi-python==1.5.5
