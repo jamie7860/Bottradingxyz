@@ -21,3 +21,17 @@ df["MACD_SIGNAL"] = macd.macd_signal()
 df["RSI"] = RSIIndicator(df["close"]).rsi()
 
 print(df.tail())
+from fastapi import FastAPI
+import threading
+
+app = FastAPI()
+
+@app.get("/")
+def read_root():
+    return {"status": "Bot is running"}
+
+def run_bot():
+    # Yahan se tumhara pura trading bot ka code chalega
+    import your_bot_logic  # replace this with actual logic or move code here
+
+threading.Thread(target=run_bot).start()
