@@ -1,51 +1,56 @@
-
 import pandas as pd
+import numpy as np
+from smartapi import SmartConnect
+import pyotp
+import time
 from ta.trend import EMAIndicator, MACD
 from ta.momentum import RSIIndicator
 
-# Dummy close price data for example
-df = pd.DataFrame({
-    "close": [150, 152, 153, 151, 150, 155, 158, 160, 157, 159, 162, 165]
-})
+# Angel One Credentials
+api_key = "oFe09u88"
+client_id = "AAAJ463076"
+pwd = "7860"
+totp_key = "RK2C2YUWSV74XKQETTEELQ2S6Y"
+smartApi = SmartConnect(api_key=api_key)
+token = pyotp.TOTP(totp_key).now()
+session = smartApi.generateSession(client_id, pwd, token)
+refreshToken = session["data"]["refreshToken"]
+feedToken = smartApi.getfeedToken()
 
-# Calculate EMA indicators
-df["EMA9"] = EMAIndicator(df["close"], window=9).ema_indicator()
-df["EMA21"] = EMAIndicator(df["close"], window=21).ema_indicator()
+# Helper function to check for spike and indicators
+def check_trade_conditions(df):
+    df["EMA9"] = EMAIndicator(close=df["close"], window=9).ema_indicator()
+    df["EMA21"] = EMAIndicator(close=df["close"], window=21).ema_indicator()
+    macd = MACD(close=df["close"])
+    df["MACD"] = macd.macd()
+    df["MACD_SIGNAL"] = macd.macd_signal()
+    rsi = RSIIndicator(close=df["close"])
+    df["RSI"] = rsi.rsi()
+    latest = df.iloc[-1]
 
-# Calculate MACD indicators
-macd = MACD(df["close"])
-df["MACD"] = macd.macd()
-df["MACD_SIGNAL"] = macd.macd_signal()
+    if (
+        latest["EMA9"] > latest["EMA21"] and
+        latest["MACD"] > latest["MACD_SIGNAL"] and
+        latest["RSI"] > 50
+    ):
+        return "BUY"
+    elif (
+        latest["EMA9"] < latest["EMA21"] and
+        latest["MACD"] < latest["MACD_SIGNAL"] and
+        latest["RSI"] < 50
+    ):
+        return "SELL"
+    return "HOLD"
 
-# Calculate RSI
-df["RSI"] = RSIIndicator(df["close"]).rsi()
+# Dummy market data (replace with live data)
+data = {"close": [150, 152, 153, 155, 157, 160, 157, 159, 162, 165]}
+df = pd.DataFrame(data)
+signal = check_trade_conditions(df)
+print("Trade Signal:", signal)
 
-print(df.tail())
-from fastapi import FastAPI
-import threading
-from fastapi import FastAPI
-import threading
-
-app = FastAPI()
-
-@app.get("/")
-def read_root():
-    return {"status": "Bot is running"}
-
-def run_bot():
-    # Yahan se tumhara pura trading bot ka code chalega
-    import your_bot_logic  # replace this with actual logic or move code here
-
-threading.Thread(target=run_bot).start()
-
-app = FastAPI()
-
-@app.get("/")
-def read_root():
-    return {"status": "Bot is running"}
-
-def run_bot():
-    # Yahan se tumhara pura trading bot ka code chalega
-    import your_bot_logic  # replace this with actual logic or move code here
-
-threading.Thread(target=run_bot).start()
+if signal == "BUY":
+    print("Buying Option... (Auto-entry)")
+elif signal == "SELL":
+    print("Selling Option... (Auto-entry)")
+else:
+    print("No trade condition met.")

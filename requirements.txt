@@ -1,8 +1,5 @@
-
 smartapi-python
-pandas
-numpy
 pyotp
 ta
-fastapi
-uvicorn
+pandas
+numpy
